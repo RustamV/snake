@@ -1,3 +1,10 @@
 .game {
     color: teal;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.board {
+    background-color: wheat;
 }
