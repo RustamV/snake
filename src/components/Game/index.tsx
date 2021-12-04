@@ -1,6 +1,23 @@
 import { useEffect, useState } from "react";
 import { useInterval } from "../../helpers/hooks";
 import styles from "./index.module.scss";
+import { config } from "../../helpers";
+
+const {
+    width,
+    height,
+    widthCount,
+    heightCount,
+    leftKeyCode,
+    topKeyCode,
+    rightKeyCode,
+    bottomKeyCode,
+    tick,
+    rightDir,
+    leftDir,
+    topDir,
+    bottomDir
+} = config;
 
 type snakeCell = {
     id: number;
@@ -17,23 +34,6 @@ const body: snakeCell[] = [
     { id: 5, y: 0, x: 5 }
 ];
 
-const width = 25;
-const height = 25;
-const widthCount = 20;
-const heightCount = 10;
-
-const leftKeyCode = 37;
-const topKeyCode = 38;
-const rightKeyCode = 39;
-const bottomKeyCode = 40;
-
-const tick = 50;
-
-const rightDir = "right";
-const leftDir = "left";
-const topDir = "top";
-const bottomDir = "bottom";
-
 const Game = () => {
     const [snakeBody, setSnakeBody] = useState(body);
     const [direction, setDirection] = useState(leftDir);
@@ -41,33 +41,18 @@ const Game = () => {
     const moveSnake = () => {
         setSnakeBody((prevBody) => {
             let newBody = [...prevBody];
+
             if (direction === rightDir) {
-                if (prevBody[0].x + 1 >= widthCount) {
-                    newBody[0] = { ...prevBody[0], x: 0 };
-                } else {
-                    newBody[0] = { ...prevBody[0], x: prevBody[0].x + 1 };
-                }
+                newBody[0] = { ...prevBody[0], x: prevBody[0].x + 1 >= widthCount ? 0 : prevBody[0].x + 1 };
             }
             if (direction === leftDir) {
-                if (prevBody[0].x - 1 < 0) {
-                    newBody[0] = { ...prevBody[0], x: widthCount - 1 };
-                } else {
-                    newBody[0] = { ...prevBody[0], x: prevBody[0].x - 1 };
-                }
+                newBody[0] = { ...prevBody[0], x: prevBody[0].x - 1 < 0 ? widthCount - 1 : prevBody[0].x - 1 };
             }
             if (direction === bottomDir) {
-                if (prevBody[0].y + 1 >= heightCount) {
-                    newBody[0] = { ...prevBody[0], y: 0 };
-                } else {
-                    newBody[0] = { ...prevBody[0], y: prevBody[0].y + 1 };
-                }
+                newBody[0] = { ...prevBody[0], y: prevBody[0].y + 1 >= heightCount ? 0 : prevBody[0].y + 1 };
             }
             if (direction === topDir) {
-                if (prevBody[0].y - 1 < 0) {
-                    newBody[0] = { ...prevBody[0], y: heightCount - 1 };
-                } else {
-                    newBody[0] = { ...prevBody[0], y: prevBody[0].y - 1 };
-                }
+                newBody[0] = { ...prevBody[0], y: prevBody[0].y - 1 < 0 ? heightCount - 1 : prevBody[0].y - 1 };
             }
 
             for (let i = 1; i < prevBody.length; i++) {
@@ -93,22 +78,21 @@ const Game = () => {
         return () => {
             document.removeEventListener("keydown", onKeyDown);
         };
-    }, []);
+    }, [direction]);
 
     const onKeyDown = (event: any) => {
         const { keyCode } = event;
-        console.log(direction);
 
-        if (keyCode === rightKeyCode) {
+        if (keyCode === rightKeyCode && direction !== rightDir && direction !== leftDir) {
             setDirection(rightDir);
         }
-        if (keyCode === leftKeyCode && direction !== rightDir) {
+        if (keyCode === leftKeyCode && direction !== rightDir && direction !== leftDir) {
             setDirection(leftDir);
         }
-        if (keyCode === topKeyCode) {
+        if (keyCode === topKeyCode && direction !== topDir && direction !== bottomDir) {
             setDirection(topDir);
         }
-        if (keyCode === bottomKeyCode) {
+        if (keyCode === bottomKeyCode && direction !== topDir && direction !== bottomDir) {
             setDirection(bottomDir);
         }
     };
