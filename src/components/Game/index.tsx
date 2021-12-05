@@ -1,42 +1,35 @@
-import { useEffect, useState } from "react";
-import { useInterval } from "../../helpers/hooks";
+import { useState } from "react";
+import { useInterval, useKeyDown } from "../../helpers/hooks";
 import styles from "./index.module.scss";
-import { config } from "../../helpers";
+import { config, SnakeCellType } from "../../helpers";
+import { SnakeCell } from "..";
 
-const {
-    width,
-    height,
-    widthCount,
-    heightCount,
-    leftKeyCode,
-    topKeyCode,
-    rightKeyCode,
-    bottomKeyCode,
-    tick,
-    rightDir,
-    leftDir,
-    topDir,
-    bottomDir
-} = config;
-
-type snakeCell = {
-    id: number;
-    y: number;
-    x: number;
-};
-
-const body: snakeCell[] = [
-    { id: 0, y: 0, x: 0 },
-    { id: 1, y: 0, x: 1 },
-    { id: 2, y: 0, x: 2 },
-    { id: 3, y: 0, x: 3 },
-    { id: 4, y: 0, x: 4 },
-    { id: 5, y: 0, x: 5 }
-];
+const { width, height, widthCount, heightCount, tick, rightDir, leftDir, topDir, bottomDir } = config;
 
 const Game = () => {
-    const [snakeBody, setSnakeBody] = useState(body);
-    const [direction, setDirection] = useState(leftDir);
+    const initialDirection = topDir;
+    const initialSnakeBody: SnakeCellType[] = [
+        { id: 0, y: 5, x: 0, dir: initialDirection },
+        { id: 1, y: 5, x: 1, dir: initialDirection },
+        { id: 2, y: 5, x: 2, dir: initialDirection },
+        { id: 3, y: 5, x: 3, dir: initialDirection },
+        { id: 4, y: 5, x: 4, dir: initialDirection },
+        { id: 5, y: 5, x: 5, dir: initialDirection }
+    ];
+
+    const [snakeBody, setSnakeBody] = useState(initialSnakeBody);
+    const [direction, setDirection] = useState(initialDirection);
+    useKeyDown(direction, setDirection);
+
+    const createApple = () => {
+        const getRandomInteger = (min: number, max: number) => {
+            return Math.round(min - 0.5 + Math.random() * (max - min + 1));
+        };
+        const randomX = getRandomInteger(0, widthCount - 1);
+        const randomY = getRandomInteger(0, heightCount - 1);
+        return { id: 999, y: randomY, x: randomX };
+    };
+    const [apple, setApple] = useState(createApple());
 
     const moveSnake = () => {
         setSnakeBody((prevBody) => {
@@ -54,48 +47,50 @@ const Game = () => {
             if (direction === topDir) {
                 newBody[0] = { ...prevBody[0], y: prevBody[0].y - 1 < 0 ? heightCount - 1 : prevBody[0].y - 1 };
             }
-
+            newBody[0].dir = direction;
             for (let i = 1; i < prevBody.length; i++) {
-                newBody[i] = { id: newBody[i].id, x: prevBody[i - 1].x, y: prevBody[i - 1].y };
+                newBody[i] = {
+                    id: newBody[i].id,
+                    x: prevBody[i - 1].x,
+                    y: prevBody[i - 1].y,
+                    dir: prevBody[i - 1].dir
+                };
             }
 
             return newBody;
         });
     };
 
+    const checkIfAppleWasEaten = () => {
+        if (snakeBody[0].x === apple.x && snakeBody[0].y === apple.y) {
+            setApple(createApple());
+            growSnakeBody();
+        }
+    };
+
+    const growSnakeBody = () => {
+        setSnakeBody((prev) => {
+            const tail = prev[prev.length - 1];
+            let newX: number = tail.x,
+                newY: number = tail.y;
+            if (tail.dir === rightDir) newX--;
+            if (tail.dir === leftDir) newX++;
+            if (tail.dir === topDir) newY--;
+            if (tail.dir === bottomDir) newY++;
+
+            const newTail = { id: tail.id + 1, x: newX, y: newY, dir: tail.dir };
+            return [...prev, newTail];
+        });
+    };
+
     const gameUpdate = () => {
-        setTimeout(() => {
-            moveSnake();
-        }, tick);
+        moveSnake();
+        checkIfAppleWasEaten();
     };
 
     useInterval(() => {
         gameUpdate();
     }, tick);
-
-    useEffect(() => {
-        document.addEventListener("keydown", onKeyDown);
-        return () => {
-            document.removeEventListener("keydown", onKeyDown);
-        };
-    }, [direction]);
-
-    const onKeyDown = (event: any) => {
-        const { keyCode } = event;
-
-        if (keyCode === rightKeyCode && direction !== rightDir && direction !== leftDir) {
-            setDirection(rightDir);
-        }
-        if (keyCode === leftKeyCode && direction !== rightDir && direction !== leftDir) {
-            setDirection(leftDir);
-        }
-        if (keyCode === topKeyCode && direction !== topDir && direction !== bottomDir) {
-            setDirection(topDir);
-        }
-        if (keyCode === bottomKeyCode && direction !== topDir && direction !== bottomDir) {
-            setDirection(bottomDir);
-        }
-    };
 
     return (
         <div className={styles.game}>
@@ -103,21 +98,20 @@ const Game = () => {
                 <div
                     style={{ width: "100%", height: "100%", position: "absolute", top: 0, left: 0, zIndex: 1 }}
                     className={styles.board}></div>
-                {snakeBody.map((particle) => {
-                    return (
-                        <div
-                            key={particle.id}
-                            style={{
-                                width: width,
-                                height: height,
-                                position: "absolute",
-                                top: particle.y * height,
-                                left: particle.x * width,
-                                zIndex: 2,
-                                backgroundColor: "lightseagreen"
-                            }}></div>
-                    );
-                })}
+                <div
+                    key={apple.id}
+                    style={{
+                        width: width,
+                        height: height,
+                        position: "absolute",
+                        top: apple.y * height,
+                        left: apple.x * width,
+                        zIndex: 2,
+                        backgroundColor: "tomato"
+                    }}></div>
+                {snakeBody.map((particle) => (
+                    <SnakeCell particle={particle} />
+                ))}
             </div>
         </div>
     );
