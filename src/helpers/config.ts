@@ -4,6 +4,7 @@ const config = {
     widthCount: 20,
     heightCount: 20,
 
+    spaceKeyCode: 32,
     leftKeyCode: 37,
     topKeyCode: 38,
     rightKeyCode: 39,

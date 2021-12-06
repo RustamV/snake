@@ -19,7 +19,8 @@ const Game = () => {
 
     const [snakeBody, setSnakeBody] = useState(initialSnakeBody);
     const [direction, setDirection] = useState(initialDirection);
-    useKeyDown(direction, setDirection);
+    const [gameStatus, setGameStatus] = useState("playing");
+    useKeyDown(direction, setDirection, setGameStatus);
 
     const createApple = () => {
         const getRandomInteger = (min: number, max: number) => {
@@ -32,33 +33,37 @@ const Game = () => {
     const [apple, setApple] = useState(createApple());
 
     const moveSnake = () => {
-        setSnakeBody((prevBody) => {
-            let newBody = [...prevBody];
+        if (gameStatus !== "stopped") {
+            setSnakeBody((prevBody) => {
+                let newBody = [...prevBody];
 
-            if (direction === rightDir) {
-                newBody[0] = { ...prevBody[0], x: prevBody[0].x + 1 >= widthCount ? 0 : prevBody[0].x + 1 };
-            }
-            if (direction === leftDir) {
-                newBody[0] = { ...prevBody[0], x: prevBody[0].x - 1 < 0 ? widthCount - 1 : prevBody[0].x - 1 };
-            }
-            if (direction === bottomDir) {
-                newBody[0] = { ...prevBody[0], y: prevBody[0].y + 1 >= heightCount ? 0 : prevBody[0].y + 1 };
-            }
-            if (direction === topDir) {
-                newBody[0] = { ...prevBody[0], y: prevBody[0].y - 1 < 0 ? heightCount - 1 : prevBody[0].y - 1 };
-            }
-            newBody[0].dir = direction;
-            for (let i = 1; i < prevBody.length; i++) {
-                newBody[i] = {
-                    id: newBody[i].id,
-                    x: prevBody[i - 1].x,
-                    y: prevBody[i - 1].y,
-                    dir: prevBody[i - 1].dir
-                };
-            }
+                if (direction === rightDir) {
+                    newBody[0] = { ...prevBody[0], x: prevBody[0].x + 1 >= widthCount ? 0 : prevBody[0].x + 1 };
+                }
+                if (direction === leftDir) {
+                    newBody[0] = { ...prevBody[0], x: prevBody[0].x - 1 < 0 ? widthCount - 1 : prevBody[0].x - 1 };
+                }
+                if (direction === bottomDir) {
+                    newBody[0] = { ...prevBody[0], y: prevBody[0].y + 1 >= heightCount ? 0 : prevBody[0].y + 1 };
+                }
+                if (direction === topDir) {
+                    newBody[0] = { ...prevBody[0], y: prevBody[0].y - 1 < 0 ? heightCount - 1 : prevBody[0].y - 1 };
+                }
+                newBody[0].dir = direction;
+                for (let i = 1; i < prevBody.length; i++) {
+                    newBody[i] = {
+                        id: newBody[i].id,
+                        x: prevBody[i - 1].x,
+                        y: prevBody[i - 1].y,
+                        dir: prevBody[i - 1].dir
+                    };
+                }
 
-            return newBody;
-        });
+                checkIfSnakeEatHerself(newBody);
+
+                return newBody;
+            });
+        }
     };
 
     const checkIfAppleWasEaten = () => {
@@ -66,6 +71,22 @@ const Game = () => {
             setApple(createApple());
             growSnakeBody();
         }
+    };
+
+    const checkIfSnakeEatHerself = (currentBody: SnakeCellType[]) => {
+        let collision = false;
+        currentBody.forEach((particle) => {
+            let hasTwoParticlesCollided = currentBody.find(
+                (currentParticle) =>
+                    currentParticle.x === particle.x &&
+                    currentParticle.y === particle.y &&
+                    currentParticle.id !== particle.id
+            );
+            if (hasTwoParticlesCollided) {
+                collision = true;
+            }
+        });
+        if (collision) setGameStatus("stopped");
     };
 
     const growSnakeBody = () => {
@@ -96,7 +117,7 @@ const Game = () => {
         <div className={styles.game}>
             <div style={{ width: width * widthCount, height: height * heightCount, position: "relative" }}>
                 <div
-                    style={{ width: "100%", height: "100%", position: "absolute", top: 0, left: 0, zIndex: 1 }}
+                    style={{ width: "100%", height: "100%", position: "absolute", top: -1, left: -1, zIndex: 1 }}
                     className={styles.board}></div>
                 <div
                     key={apple.id}
@@ -107,7 +128,8 @@ const Game = () => {
                         top: apple.y * height,
                         left: apple.x * width,
                         zIndex: 2,
-                        backgroundColor: "tomato"
+                        backgroundColor: "tomato",
+                        borderRadius: "50%"
                     }}></div>
                 {snakeBody.map((particle) => (
                     <SnakeCell particle={particle} />

@@ -1,0 +1,30 @@
+.cell {
+    position: absolute;
+    z-index: 3;
+    display: flex;
+    $snakeColor: #444;
+    $snakeWidth: 1px;
+
+    span {
+        position: absolute;
+    }
+
+    span:nth-child(1) {
+        width: $snakeWidth;
+        height: 100%;
+        background-color: $snakeColor;
+        left: 12px;
+    }
+    span:nth-child(2) {
+        width: 100%;
+        height: $snakeWidth;
+        background-color: $snakeColor;
+        top: 6px;
+    }
+    span:nth-child(3) {
+        width: 100%;
+        height: $snakeWidth;
+        background-color: $snakeColor;
+        bottom: 6px;
+    }
+}

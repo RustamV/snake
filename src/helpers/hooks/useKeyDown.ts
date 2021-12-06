@@ -1,13 +1,21 @@
 import { useEffect, Dispatch, SetStateAction } from "react";
 import { config } from "../index";
 
-const { leftKeyCode, topKeyCode, rightKeyCode, bottomKeyCode, rightDir, leftDir, topDir, bottomDir } = config;
+const { spaceKeyCode, leftKeyCode, topKeyCode, rightKeyCode, bottomKeyCode, rightDir, leftDir, topDir, bottomDir } =
+    config;
 
-const useKeyDown = (direction: string, setDirection: Dispatch<SetStateAction<string>>) => {
+const useKeyDown = (
+    direction: string,
+    setDirection: Dispatch<SetStateAction<string>>,
+    setGameStatus: Dispatch<SetStateAction<string>>
+) => {
     useEffect(() => {
         const onKeyDown = (event: any) => {
             const { keyCode } = event;
 
+            if (keyCode === spaceKeyCode) {
+                setGameStatus((prev) => (prev === "stopped" ? "playing" : "stopped"));
+            }
             if (keyCode === rightKeyCode && direction !== rightDir && direction !== leftDir) {
                 setDirection(rightDir);
             }
