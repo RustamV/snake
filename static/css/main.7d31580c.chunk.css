@@ -1,0 +1,93 @@
+.Game_game__B0OC- {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.Game_header__3tDKq {
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    grid-gap: 8px;
+    gap: 8px;
+}
+.Game_title__34brO {
+    font-size: 30px;
+}
+.Game_button__1K4AD {
+    font-family: "UpheavalPro";
+    -webkit-appearance: none;
+    appearance: none;
+    font-size: 12px;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    background-color: transparent;
+    border-radius: 4px;
+}
+.Game_button__1K4AD:focus-visible {
+    outline: none;
+}
+.Board_board__3BcvK {
+    position: relative;
+}
+.Board_inner__2-UUY {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    z-index: 1;
+    top: -1px;
+    left: -1px;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+.Apple_apple__1zFMy {
+    position: absolute;
+    z-index: 2;
+    background-color: tomato;
+    border-radius: 50%;
+}
+.SnakeCell_cell__1Rg-H {
+    position: absolute;
+    z-index: 3;
+    display: flex;
+}
+.SnakeCell_cell__1Rg-H span {
+    position: absolute;
+}
+.SnakeCell_cell__1Rg-H span:first-child {
+    width: 1px;
+    height: 100%;
+    background-color: #838383;
+    left: 50%;
+}
+.SnakeCell_cell__1Rg-H span:nth-child(2) {
+    width: 100%;
+    height: 1px;
+    background-color: #838383;
+    top: 25%;
+}
+.SnakeCell_cell__1Rg-H span:nth-child(3) {
+    width: 100%;
+    height: 1px;
+    background-color: #838383;
+    bottom: 25%;
+}
+.SnakeCell_horizontal__jpRGF {
+    transform: rotate(90deg);
+}
+body {
+    margin: 0;
+    font-family: "UpheavalPro";
+}
+#root {
+    height: 100vh;
+}
+@font-face {
+    font-family: "UpheavalPro";
+    src: url(../media/UpheavalPro.49c72e6a.otf);
+    src: url(../media/UpheavalPro.bda9ace3.ttf) format("truetype");
+    font-style: normal;
+    font-display: swap;
+}
+/*# sourceMappingURL=main.7d31580c.chunk.css.map */
