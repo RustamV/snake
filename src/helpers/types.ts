@@ -1,8 +1,11 @@
-type SnakeCellType = {
+type CellType = {
     id: number;
     y: number;
     x: number;
-    dir: string;
 };
 
-export type { SnakeCellType };
+interface SnakeCellType extends CellType {
+    dir: string;
+}
+
+export type { CellType, SnakeCellType };

@@ -1,6 +1,6 @@
 const config = {
-    width: 25,
-    height: 25,
+    width: 15,
+    height: 15,
     widthCount: 20,
     heightCount: 20,
 

@@ -1,13 +1,15 @@
 import { config, SnakeCellType } from "../../helpers";
 import styles from "./index.module.scss";
+import cn from "classnames";
 
-const { width, height } = config;
+const { width, height, rightDir, leftDir } = config;
 
 const SnakeCell = ({ particle }: { particle: SnakeCellType }) => {
     return (
         <div
-            key={particle.id}
-            className={styles.cell}
+            className={cn(styles.cell, {
+                [styles.horizontal]: particle.dir === rightDir || particle.dir === leftDir
+            })}
             style={{
                 width: width,
                 height: height,
